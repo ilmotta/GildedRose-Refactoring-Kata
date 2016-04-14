@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+source 'http://rubygems.org'
+
+group :development do
+  gem 'rspec', '~> 3.4.0'
+  gem 'fuubar', '~> 2.0.0'
+end
