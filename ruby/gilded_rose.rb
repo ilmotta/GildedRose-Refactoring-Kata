@@ -1,4 +1,6 @@
 class GildedRose
+  MIN_QUALITY = 0
+  MAX_QUALITY = 50
 
   def initialize(items)
     @items = items
