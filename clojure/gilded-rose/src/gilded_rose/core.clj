@@ -51,7 +51,8 @@
                         item)
                       item)))
                 item)
-               item))))))
+               item))
+           item))))
    item))
 
 (defn update-quality

@@ -35,11 +35,17 @@
 
     ; It caps the quality to a maximum
     (expect 50
-            (:quality (first (update-quality [(assoc item :quality 49)]))))))
+            (:quality (first (update-quality [(assoc item :quality 50)]))))))
 
 ; "Aged Brie" item
 (let [item {:name "Aged Brie" :sell-in 20 :quality 0}]
-  (expect-to-increase-quality item))
+  (expect-to-increase-quality item)
+  (expect -2
+          (:sell-in (first (update-quality [(assoc item :sell-in -1)]))))
+  (expect -1
+          (:sell-in (first (update-quality [(assoc item :sell-in 0)]))))
+  (expect 19
+          (:sell-in (first (update-quality [item])))))
 
 ; "Backstage passes..." item
 (let [item {:name "Backstage passes to a TAFKAL80ETC concert" :sell-in 20 :quality 20}]
