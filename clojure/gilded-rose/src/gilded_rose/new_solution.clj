@@ -1,53 +1,38 @@
 (ns gilded-rose.new-solution)
 
-(defn indestructible?
-  [name]
-  (= name "Sulfuras, Hand of Ragnaros"))
+(def BACKSTAGE-NAME "Backstage passes to a TAFKAL80ETC concert")
+(def AGED-BRIE-NAME "Aged Brie")
+(def SULFURAS-NAME "Sulfuras, Hand of Ragnaros")
 
-(defn aged-brie?
-  [name]
-  (= name "Aged Brie"))
+(defn- item-updater
+  [{:keys [name sell-in quality]}]
+  (condp = name
+    BACKSTAGE-NAME
+    {:sell-in dec
+     :quality #(cond
+                 (<= sell-in 0) 0
+                 (< sell-in 6) (min 50 (+ % 3))
+                 (<= sell-in 10) (min 50 (+ % 2))
+                 :else (min 50 (inc %)))}
 
-(defn backstage?
-  [name]
-  (= name "Backstage passes to a TAFKAL80ETC concert"))
+    AGED-BRIE-NAME
+    {:quality #(min 50 (inc %)) :sell-in dec}
 
-(defn update-generic
-  [{:keys [sell-in] :as item}]
-  {:sell-in dec
-   :quality #(cond
-               (<= sell-in 0) (- % 2)
-               (> % 0) (dec %)
-               :else %)})
+    SULFURAS-NAME
+    {:quality identity :sell-in identity}
 
-(defn update-backstage
-  [{:keys [sell-in] :as item}]
-  {:sell-in dec
-   :quality #(cond
-               (<= sell-in 0) 0
-               (< sell-in 6) (min 50 (+ % 3))
-               (<= sell-in 10) (min 50 (+ % 2))
-               :else (min 50 (inc %)))})
+    {:sell-in dec
+     :quality #(cond
+                 (<= sell-in 0) (- % 2)
+                 (> % 0) (dec %)
+                 :else %)}))
 
-(defn update-aged-brie
-  []
-  {:quality #(min 50 (inc %)) :sell-in dec})
+(defn- update-item
+  [item prop]
+  (update item prop (prop (item-updater item))))
 
-(defn update-indestructible
-  []
-  {:quality identity :sell-in identity})
-
-(defn update-item-quality
-  [{:keys [name sell-in quality] :as item}]
-  (cond
-    (backstage? name) (update-backstage item)
-    (aged-brie? name) (update-aged-brie)
-    (indestructible? name) (update-indestructible)
-    :else (update-generic item)))
 
 (defn update-quality
   [items]
-  (map (fn [item]
-         (update (update item :quality (:quality (update-item-quality item)))
-                 :sell-in (:sell-in (update-item-quality item))))
-        items))
+  (map (fn [item] (reduce #(update-item %1 %2) item [:quality :sell-in]))
+       items))
