@@ -1,4 +1,4 @@
-(ns gilded-rose.new-solution-test
+(ns gilded-rose.solution-test
   (use expectations gilded-rose.new-solution))
 
 (defn expect-to-increase-quality

@@ -51,8 +51,3 @@
          (update (update item :quality (:quality (update-item-quality item)))
                  :sell-in (:sell-in (update-item-quality item))))
         items))
-
-(defn log [step]
-  (fn [item] (do
-               (println (str "step-" step)  item)
-               item)))
