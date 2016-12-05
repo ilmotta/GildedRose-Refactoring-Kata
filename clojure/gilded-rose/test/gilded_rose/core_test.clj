@@ -1,21 +1,22 @@
 (ns gilded-rose.core-test
-  (:use expectations gilded-rose.test-helper gilded-rose.core))
+  (use expectations gilded-rose.core))
 
 (defn expect-to-increase-quality
   [item]
   (do
     ; It increases the quality the older it gets
-    (expect-quality (+ (:quality item) 2) (update-quality (update-quality [item])))
+    (expect (+ (:quality item) 2)
+            (:quality (first (update-quality (update-quality [item])))))
 
     ; It caps the quality to a maximum
-    (expect-quality 50 (update-quality [(assoc item :quality 50)]))))
+    (expect 50 (:quality (first (update-quality [(assoc item :quality 50)]))))))
 
 (defn expect-to-decrease-sell-in
   [item]
   (do
-    (expect-sell-in -2 (update-quality [(assoc item :sell-in -1)]))
-    (expect-sell-in -1 (update-quality [(assoc item :sell-in 0)]))
-    (expect-sell-in 19 (update-quality [item]))))
+    (expect -2 (:sell-in (first (update-quality [(assoc item :sell-in -1)]))))
+    (expect -1 (:sell-in (first (update-quality [(assoc item :sell-in 0)]))))
+    (expect 19 (:sell-in (first (update-quality [item]))))))
 
 (expect [] (update-quality []))
 
@@ -27,21 +28,21 @@
   (expect "foo" (:name (first (update-quality [item]))))
 
   ; It degrades twice as fast after the sell by date has passed
-  (expect-quality 3 (update-quality [{:name "foo" :quality 5 :sell-in 0}]))
+  (expect 3 (:quality (first (update-quality [{:name "foo" :quality 5 :sell-in 0}]))))
 
   ; It degrades if quality is greater than zero
-  (expect-quality 9 (update-quality [(assoc item :quality 10)]))
+  (expect 9 (:quality (first (update-quality [(assoc item :quality 10)]))))
 
   ; It caps the quality to a minimum of zero
-  (expect-quality 0 (update-quality [(assoc item :quality 0)])))
+  (expect 0 (:quality (first (update-quality [(assoc item :quaity 0)])))))
 
 ; Sulfuras item
 (let [items [{:name "Sulfuras, Hand of Ragnaros" :sell-in 20 :quality 10}]]
   ; It never gets old
-  (expect-sell-in 20 (update-quality (update-quality items)))
+  (expect 20 (:sell-in (first (update-quality items))))
 
   ; It never decreases in quality
-  (expect-quality 10 (update-quality (update-quality items))))
+  (expect 10 (:quality (first (update-quality items)))))
 
 ; "Aged Brie" item
 (let [item {:name "Aged Brie" :sell-in 20 :quality 0}]
@@ -54,17 +55,17 @@
   (expect-to-decrease-sell-in item)
 
   ; It drops the quality to zero after the concert
-  (expect-quality 0 (update-quality [(assoc item :sell-in 0)]))
-  (expect-quality 0 (update-quality [(assoc item :sell-in -1)]))
+  (expect 0 (:quality (first (update-quality [(assoc item :sell-in 0)]))))
+  (expect 0 (:quality (first (update-quality [(assoc item :sell-in -1)]))))
 
   ; It does not increase the quality by 3 when there are 6 days left
-  (expect-quality 22 (update-quality [(assoc item :sell-in 6)]))
+  (expect 22 (:quality (first (update-quality [(assoc item :sell-in 6)]))))
 
   ; It increases the quality by 3 when there are 5 days or less left
-  (expect-quality 23 (update-quality [(assoc item :sell-in 5)]))
+  (expect 23 (:quality (first (update-quality [(assoc item :sell-in 5)]))))
 
   ; It does not increase the quality by 2 when there are 11 days left
-  (expect-quality 21 (update-quality [(assoc item :sell-in 11)]))
+  (expect 21 (:quality (first (update-quality [(assoc item :sell-in 11)]))))
 
   ; It increases the quality by 2 when there are 10 days or less left
-  (expect-quality 22 (update-quality [(assoc item :sell-in 10)])))
+  (expect 22 (:quality (first (update-quality [(assoc item :sell-in 10)])))))
