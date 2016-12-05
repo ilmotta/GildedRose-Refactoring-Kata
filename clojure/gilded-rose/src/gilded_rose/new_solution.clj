@@ -31,7 +31,6 @@
   [item prop]
   (update item prop (prop (item-updater item))))
 
-
 (defn update-quality
   [items]
   (map (fn [item] (reduce #(update-item %1 %2) item [:quality :sell-in]))
